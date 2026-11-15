@@ -11,14 +11,11 @@
   - Syntax error: 문법을 잘못 쓴 경우
   - Semantic error: 존재하지 않는 node를 `\draw`에서 참조하는 경우
   - Semantic error: 산술 연산에서 0으로 나누는 경우 (막아야 함)
+    - **`1/0`뿐 아니라 `1/(2-2)`처럼 계산해야 0이 되는 상수 식도 반드시 잡아야 한다.** constant folding은 하지 않기로 했으므로, Semantic 단계에서 AST를 바꾸지 않고 상수 식만 계산해서 나누는 값이 0인지 검사한다. (잊지 말 것)
 
 ## 시각화
 
 - Parse tree 다음으로 AST도 화면에 보여준다.
-
-## 최적화 (Constant folding)
-
-- Constant folding은 AST를 여러 번 순회해야 한다 (한 번에 다 접히지 않음). 결과적으로 AST가 일부 생략·축약된 형태가 된다.
 
 ## Symbol table
 

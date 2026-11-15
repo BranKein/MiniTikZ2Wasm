@@ -69,6 +69,6 @@
 
 ## 미정인 것
 
-- 단계 결과 박스의 실제 개수와 내용. 캔버스의 4개는 예시일 뿐이며, 단계 수만큼 박스를 만든다. 후보 단계는 Lexer(토큰), Parse tree, AST, Semantic/constant folding, Wasm이다. 요구사항상 parse tree 다음에 AST도 보여야 한다.
+- 단계 결과 박스의 실제 개수와 내용. 캔버스의 4개는 예시일 뿐이며, 단계 수만큼 박스를 만든다. 후보 단계는 Lexer(토큰), Parse tree, AST, Semantic, Wasm이다. 요구사항상 parse tree 다음에 AST도 보여야 한다.
 - 렌더 영역을 정말 HTML Canvas로 할지. 제안서에서는 Wasm이 Canvas 2D API를 import해 그린다.
 - 실제 시각 디자인(색, 글꼴 등). 캔버스는 레이아웃 도형뿐이다.

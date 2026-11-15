@@ -23,7 +23,7 @@ It compiles MiniTikZ (a small subset/modified version of TikZ) into a WebAssembl
 1. Lexer — source → tokens with source positions
 2. Parser — tokens → AST
 3. Semantic analysis — AST → type-annotated AST; errors such as `undefined node 'b'`
-4. Wasm code generation — (optimized) AST → `.wasm` binary
+4. Wasm code generation — AST → `.wasm` binary
 5. Browser execution — run the module and draw on a Canvas
 
 ## Architecture
@@ -49,7 +49,7 @@ Expected render: four vertical lines at x = 0, 1, 2, 3, with black dots at both 
 
 ## Course constraints
 
-See [docs/project-notes.md](docs/project-notes.md). Key points: write RE before CFG; recover from syntax errors and keep compiling; show at least 2 error kinds (syntax, undefined node, division by zero); show parse tree and AST; constant folding needs multiple AST passes; a simple symbol table (BST allowed) is recommended.
+See [docs/project-notes.md](docs/project-notes.md). Key points: write RE before CFG; recover from syntax errors and keep compiling; show at least 2 error kinds (syntax, undefined node, division by zero, including constant expressions like 1/(2-2)); show parse tree and AST; a simple symbol table (BST allowed) is recommended.
 
 ## Demo web design
 

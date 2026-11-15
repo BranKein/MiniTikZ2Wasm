@@ -1,0 +1,43 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE / editor
+.idea/
+.vscode/
+*.iml
+*.swp
+
+# Rust
+target/
+**/*.rs.bk
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Wasm / build output
+pkg/
+dist/
+build/
+out/
+cmake-build-*/
+.emscripten_cache/
+
+# Logs / env
+*.log
+.env
+.env.*
+!.env.example
+
+# Secrets
+.secret_npmrc
+
+# Claude / Codex local
+.claude/
+.codex/
+CLAUDE.local.md
+TEAM_STATUS.md
+graphify-out/

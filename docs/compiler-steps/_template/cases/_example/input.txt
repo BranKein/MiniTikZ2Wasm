@@ -1,0 +1,1 @@
+(이 단계의 입력을 그대로 둔다. 첫 단계는 MiniTikZ 소스 텍스트이므로 input.txt, 이후 단계는 이전 단계의 출력 JSON이므로 input.json으로 저장한다.)

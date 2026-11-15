@@ -51,6 +51,14 @@ Expected render: four vertical lines at x = 0, 1, 2, 3, with black dots at both 
 
 See [docs/project-notes.md](docs/project-notes.md). Key points: write RE before CFG; recover from syntax errors and keep compiling; show at least 2 error kinds (syntax, undefined node, division by zero); show parse tree and AST; constant folding needs multiple AST passes; a simple symbol table (BST allowed) is recommended.
 
+## Demo web design
+
+Layout sketch for the presentation demo (input box, example buttons, canvas, per-step result boxes, one backend API per compiler step): [docs/demo-web-design.md](docs/demo-web-design.md). Several details are still undecided; see its last section. The example-input buttons and the compiler steps are both undecided and must be built extensible (data-driven lists) so more can be added later.
+
+## Compiler step docs
+
+Each compiler step has its own folder under [docs/compiler-steps/](docs/compiler-steps/README.md). A step folder holds a `README.md` (what the step does, input, output, errors, API) and a `cases/` folder of example/test cases, one folder per case with `input.*` and `expected.json` (plus optional `case.md`). The compiler-steps README holds the common rules, the case structure and the step list; start a new step by copying [docs/compiler-steps/_template/](docs/compiler-steps/_template/). The set of steps is not decided yet.
+
 ## Notes
 
 - More project details will be added as the course requirements are clarified.

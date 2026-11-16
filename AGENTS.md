@@ -1,5 +1,12 @@
 # AGENTS.md
 
+## Documentation language
+
+- All docs under `docs/` and all `README.md` files are written in **English by default** (the original).
+- Every `X.md` in `docs/` and every `README.md` must have a paired Korean file `X.ko.md` (e.g. `docs/project-proposal.md` + `docs/project-proposal.ko.md`, `web-fe/README.md` + `web-fe/README.ko.md`).
+- When changing either file, update both in the same change. Links inside a `.ko.md` file point to the `.ko.md` version of the target.
+- This file (`AGENTS.md`) is English only.
+
 ## Project
 
 **MiniTikZ2Wasm** — final project for a compiler course. Full proposal: [docs/project-proposal.md](docs/project-proposal.md).
@@ -31,6 +38,17 @@ It compiles MiniTikZ (a small subset/modified version of TikZ) into a WebAssembl
 - Web page: a text box for MiniTikZ code, a canvas beside it, and a view of each compiler stage below the text box.
 - Compiler stages run on a backend server, not in the browser; only the generated Wasm runs in the browser.
 - Errors must be reported with line and column positions.
+
+## Folder structure (proposal, not yet agreed with the teammate)
+
+Details and open questions: [docs/folder-structure.md](docs/folder-structure.md).
+
+- `mini-tikz-2-wasm/` — pure-Python package (dist `mini-tikz-2-wasm`, import `mini_tikz_2_wasm`, src layout). All compiler logic: `lexer.py`, `parser.py`, `ast_nodes.py`, `symbol_table.py`, `semantic.py`, `codegen.py`, `errors.py`. `STEPS` in `__init__.py` is the ordered list of step functions (`lex`, `parse`, `analyze`, `codegen`). No web dependency. Tests: `pytest` inside the package.
+- `web-be/` — FastAPI app. Imports `mini_tikz_2_wasm`, exposes `GET /health`, `GET /api/steps`, and one `POST /api/{step}` per entry in `STEPS` (body `{"source": ...}`). Holds no compiler logic. Run: `uvicorn app.main:app --reload --port 8000`.
+- `web-fe/` — plain HTML/CSS/JS (ES modules, no React, no bundler). Calls the backend per step, shows each result, and runs the returned Wasm on the canvas. Example buttons (`js/examples.js`) and steps (`js/steps.js`) are data-driven lists. Serve: `python3 -m http.server 5173`.
+- Dependency direction: `web-fe` → HTTP → `web-be` → import → `mini-tikz-2-wasm`. Keep compiler logic out of `web-be` and `web-fe`.
+- Local setup: `pip install -e ./mini-tikz-2-wasm[dev]` then `pip install -e ./web-be[dev]`.
+- Adding a compiler step: add the module/function in the package, register it in `STEPS`, add it to `web-fe/js/steps.js`, and add its folder under `docs/compiler-steps/`.
 
 ## Reference test program
 

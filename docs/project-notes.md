@@ -1,24 +1,24 @@
-# 프로젝트 진행 시 주의할 점
+# Things to Watch During the Project
 
-## 구현 순서
+## Implementation order
 
-- CFG(문법)를 그려야 한다. 그 전에 RE(정규표현식, 토큰 정의)를 먼저 만들어야 한다.
+- We must draw the CFG (grammar). Before that, write the RE (regular expressions, i.e. token definitions).
 
-## 에러 처리
+## Error handling
 
-- 문법이 틀린 부분이 있으면 그 부분만 건너뛰고(에러 출력) 뒤쪽 컴파일을 계속 시도한다 (error recovery).
-- **에러를 최소 2종류 이상 보여줘야 한다.**
-  - Syntax error: 문법을 잘못 쓴 경우
-  - Semantic error: 존재하지 않는 node를 `\draw`에서 참조하는 경우
-  - Semantic error: 산술 연산에서 0으로 나누는 경우 (막아야 함)
-    - **`1/0`뿐 아니라 `1/(2-2)`처럼 계산해야 0이 되는 상수 식도 반드시 잡아야 한다.** constant folding은 하지 않기로 했으므로, Semantic 단계에서 AST를 바꾸지 않고 상수 식만 계산해서 나누는 값이 0인지 검사한다. (잊지 말 것)
+- If part of the input has a syntax error, skip only that part (report the error) and keep compiling the rest (error recovery).
+- **We must show at least 2 kinds of errors.**
+  - Syntax error: the grammar is violated.
+  - Semantic error: `\draw` references a node that does not exist.
+  - Semantic error: division by zero in an arithmetic expression (must be prevented).
+    - **Catch not only `1/0` but also constant expressions that evaluate to zero, such as `1/(2-2)`.** We decided not to do constant folding, so the semantic step does not change the AST; it only evaluates constant expressions and checks whether the divisor is zero. (Do not forget this.)
 
-## 시각화
+## Visualization
 
-- Parse tree 다음으로 AST도 화면에 보여준다.
+- After the parse tree, also show the AST on screen.
 
 ## Symbol table
 
-- 필수는 아니고 선택 사항이다.
-- 이 프로젝트는 node 정보(이름, 좌표)를 보관해야 하므로 만드는 것을 권고한다. 일부는 AST에 그 정보를 담기도 한다.
-- 간단하게만 만든다. 내용이 많아질 수 있으면 BST로 구현해도 된다.
+- Optional, not required.
+- This project must keep node information (name, coordinates), so building one is recommended. Some designs store that information in the AST instead.
+- Keep it simple. If it may grow, a BST implementation is fine.

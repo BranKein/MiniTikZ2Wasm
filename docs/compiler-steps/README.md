@@ -1,27 +1,27 @@
-# 컴파일러 단계 문서 (공통)
+# Compiler Step Docs (common)
 
-각 컴파일러 단계(step)가 무엇을 하고, 무엇을 입력으로 받아 무엇을 출력하는지를 단계별 문서로 남기는 폴더다. 이 README는 모든 단계에 공통인 내용만 담는다.
+This folder holds one document per compiler step: what the step does, what it takes as input and what it produces. This README contains only what is common to all steps.
 
-단계 목록은 아직 미정이다. 단계는 나중에 추가·변경할 수 있어야 한다([../demo-web-design.md](../demo-web-design.md)의 확장성 요구사항 참고).
+The list of steps is not decided yet. Steps must be easy to add or change later (see the extensibility requirements in [../demo-web-design.md](../demo-web-design.md)).
 
-## 폴더 구조
+## Folder structure
 
-단계마다 폴더 하나를 `docs/compiler-steps/<번호>-<이름>/` 형태로 만든다. 예: `01-lexer/`. 번호는 실행 순서이며, 단계를 끼워 넣으면 번호를 다시 매긴다.
+Make one folder per step, as `docs/compiler-steps/<number>-<name>/`. Example: `01-lexer/`. The number is the execution order; renumber when a step is inserted.
 
 ```
 docs/compiler-steps/
-├── README.md                 # 이 문서 (공통 규칙, 단계 목록)
-├── _template/                # 새 단계 폴더의 원본. 복사해서 쓴다
-│   ├── README.md             # 단계 설명 문서의 format
+├── README.md                 # this document (common rules, step list)
+├── _template/                # source for new step folders. Copy it
+│   ├── README.md             # format of a step description doc
 │   └── cases/
-│       └── _example/         # 케이스 하나의 format
+│       └── _example/         # format of one case
 │           ├── input.txt
 │           ├── expected.json
 │           └── case.md
-└── 01-lexer/                 # 단계 폴더 (예시)
-    ├── README.md             # 이 단계 설명: 하는 일, 입력, 출력, 에러, API
+└── 01-lexer/                 # a step folder (example)
+    ├── README.md             # this step: what it does, input, output, errors, API
     └── cases/
-        ├── basic/            # 케이스 하나 = 폴더 하나
+        ├── basic/            # one case = one folder
         │   ├── input.txt
         │   ├── expected.json
         │   └── case.md
@@ -29,38 +29,38 @@ docs/compiler-steps/
             └── ...
 ```
 
-## 케이스 구조
+## Case structure
 
-케이스는 그 단계의 예제이자 테스트 케이스다. 케이스 하나는 `cases/<케이스 이름>/` 폴더이고 아래 파일을 둔다.
+A case is both an example and a test case for the step. One case is a folder `cases/<case name>/` holding these files.
 
-| 파일 | 필수 | 내용 |
+| File | Required | Content |
 |---|---|---|
-| `input.txt` 또는 `input.json` | 필수 | 이 단계의 입력. 첫 단계는 MiniTikZ 소스라 `input.txt`, 이후 단계는 이전 단계의 출력이라 `input.json` |
-| `expected.json` | 필수 | 이 단계의 기대 출력. `{ "output": ..., "errors": [...] }` 형태이며, 에러가 없으면 `errors`는 빈 배열 |
-| `case.md` | 선택 | 케이스 종류(정상, syntax error, semantic error 등), 확인하려는 것, 데모 예제 버튼으로 쓸지 |
+| `input.txt` or `input.json` | yes | Input of this step. The first step takes MiniTikZ source, so `input.txt`; later steps take the previous step's output, so `input.json` |
+| `expected.json` | yes | Expected output of this step. Shaped as `{ "output": ..., "errors": [...] }`; `errors` is an empty array when there are none |
+| `case.md` | no | Kind of case (valid, syntax error, semantic error, ...), what it checks, whether to use it as a demo example button |
 
-규칙:
+Rules:
 
-- 케이스 이름은 소문자와 `-`로 짓는다. 예: `basic`, `missing-brace`, `divide-by-zero`.
-- 기대 출력은 그 단계의 API 응답과 같은 형식으로 쓴다. 그래야 그대로 자동 테스트에 쓸 수 있다.
-- 한 케이스의 `expected.json`은 다음 단계 케이스의 `input.json`으로 재사용할 수 있다.
-- 데모의 예제 입력 버튼은 이 케이스들에서 만들 수 있도록, 케이스를 데이터로 읽을 수 있는 구조를 유지한다.
+- Case names are lowercase with `-`. E.g. `basic`, `missing-brace`, `divide-by-zero`.
+- Write the expected output in the same format as the step's API response, so it can be used directly in automated tests.
+- A case's `expected.json` can be reused as the next step's case `input.json`.
+- Keep cases readable as data, so the demo's example input buttons can be built from them.
 
-## 문서 규칙
+## Doc rules
 
-- 새 단계는 [_template/](_template/) 폴더를 통째로 복사해서 시작한다.
-- 단계 폴더가 추가·삭제·이름 변경되면 아래 "단계 목록" 표도 같이 고친다.
+- Start a new step by copying the whole [_template/](_template/) folder.
+- When a step folder is added, removed or renamed, also update the "Step list" table below.
 
-## 공통 원칙
+## Common principles
 
-- 각 단계는 별도의 백엔드 API로 구현하고, 입력과 출력은 JSON으로 주고받는다.
-- 각 단계의 출력은 화면의 단계별 결과 박스에 그대로 보여줄 수 있어야 한다.
-- 문법 에러가 있어도 해당 부분만 건너뛰고(에러 기록) 뒤를 계속 처리한다. 에러는 단계마다 line/column과 함께 모아서 반환한다.
-- 에러가 있으면 에러 로그를 보여주고, 없으면 그래프를 그린다.
-- 최소 2종류 이상의 에러(syntax, semantic)를 보여줘야 한다. 자세한 수업 요구사항은 [../project-notes.md](../project-notes.md)를 본다.
+- Implement each step as a separate backend API; input and output are exchanged as JSON.
+- Each step's output must be showable as is in the per-step result box on the page.
+- Even with syntax errors, skip only the offending part (record the error) and keep processing. Each step collects errors with line/column and returns them.
+- If there are errors, show the error log; otherwise draw the graph.
+- We must show at least 2 kinds of errors (syntax, semantic). For the course requirements, see [../project-notes.md](../project-notes.md).
 
-## 단계 목록
+## Step list
 
-| 번호 | 단계 | 폴더 | 상태 |
+| No. | Step | Folder | Status |
 |---|---|---|---|
-| - | (미정) | - | - |
+| - | (undecided) | - | - |

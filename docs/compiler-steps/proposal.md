@@ -1,48 +1,48 @@
-# 컴파일러 단계 제안 (논의용)
+# Compiler Step Proposal (for discussion)
 
-친구와 의논하기 위한 초안이다. 확정이 아니며, 단계 구성이 정해지면 단계별 폴더와 설명 문서를 만든다([README.md](README.md) 참고).
+A draft for discussing with the teammate. Not final; once the step layout is decided, we create per-step folders and description docs (see [README.md](README.md)).
 
-- constant folding(상수 접기)은 하지 않기로 했다.
-- 단계는 나중에 추가·변경할 수 있게 만든다.
+- We decided not to do constant folding.
+- Steps must be easy to add or change later.
 
-## 제안하는 단계
+## Proposed steps
 
-| # | 단계 | Input | Output |
+| # | Step | Input | Output |
 |---|---|---|---|
-| 1 | Lexer | raw MiniTikZ 텍스트 | 토큰 목록(위치 포함) |
-| 2 | Parser | 토큰 목록 | parse tree |
-| 3 | AST 변환 | parse tree | AST |
-| 4 | Semantic analysis | AST | 검증된 AST + symbol table |
-| 5 | Wasm codegen | 검증된 AST | `.wasm` 바이너리(+ 화면 표시용 텍스트 형태) |
-| 6 | Browser 실행 | `.wasm` | 캔버스에 그려진 그림 |
+| 1 | Lexer | raw MiniTikZ text | token list (with positions) |
+| 2 | Parser | token list | parse tree |
+| 3 | AST conversion | parse tree | AST |
+| 4 | Semantic analysis | AST | validated AST + symbol table |
+| 5 | Wasm codegen | validated AST | `.wasm` binary (+ text form for display) |
+| 6 | Browser execution | `.wasm` | figure drawn on the canvas |
 
-1~5단계는 각각 별도의 백엔드 API로 만들고, 6단계는 브라우저에서 실행한다.
+Steps 1–5 are each a separate backend API; step 6 runs in the browser.
 
-## 단계별 설명
+## Per-step description
 
 1. **Lexer**
-   - `\draw`, `\i`, 숫자, `--`, 연산자 등을 토큰으로 자른다.
-   - 에러: 정의되지 않은 문자. 그 문자만 건너뛰고 계속한다.
+   - Splits input into tokens such as `\draw`, `\i`, numbers, `--` and operators.
+   - Error: undefined character. Skip only that character and continue.
 2. **Parser**
-   - 토큰이 문법(CFG)에 맞는지 보고 parse tree를 만든다.
-   - 에러: syntax error. 틀린 문장만 건너뛰고 뒤를 계속 파싱한다.
-3. **AST 변환**
-   - parse tree에서 괄호, 세미콜론, 중간 규칙 노드를 없애고 Foreach, Draw, Node, 식만 남긴다.
-   - 수업 요구사항(parse tree 다음에 AST도 보여줄 것)에 대응한다.
+   - Checks the tokens against the grammar (CFG) and builds the parse tree.
+   - Error: syntax error. Skip only the bad statement and keep parsing.
+3. **AST conversion**
+   - Removes parentheses, semicolons and intermediate rule nodes from the parse tree, leaving Foreach, Draw, Node and expressions.
+   - Answers the course requirement (show the AST after the parse tree).
 4. **Semantic analysis**
-   - `\node`가 정의한 이름을 symbol table에 모은다. 간단하게 만들고, 커지면 BST로 바꿀 수 있다.
-   - 에러: 없는 node를 `\draw`에서 참조, 정의되지 않은 루프 변수, 0으로 나누기.
-   - 0으로 나누기는 `1/0`뿐 아니라 `1/(2-2)`처럼 계산해야 0이 되는 상수 식도 잡아야 한다. AST는 바꾸지 않고 상수 식만 계산해서 검사한다([../project-notes.md](../project-notes.md) 참고).
+   - Collects the names defined by `\node` into a symbol table. Keep it simple; it can become a BST if it grows.
+   - Errors: `\draw` references a missing node, undefined loop variable, division by zero.
+   - Division by zero must be caught not only for `1/0` but also for constant expressions that evaluate to zero, like `1/(2-2)`. Do not change the AST; just evaluate constant expressions and check (see [../project-notes.md](../project-notes.md)).
 5. **Wasm codegen**
-   - AST를 순회하며 Wasm 명령으로 바꾼다.
-   - `\foreach`는 Wasm 루프로, 식은 Wasm 연산으로 만든다.
-   - `moveTo`, `lineTo`, `stroke`는 import로 호출하고, `draw` 함수를 export한다.
-6. **Browser 실행**
-   - 브라우저에서 `.wasm`을 돌려 캔버스에 그린다.
-   - 에러가 있으면 같은 자리에 에러 로그를 보여준다.
+   - Walks the AST and turns it into Wasm instructions.
+   - `\foreach` becomes a Wasm loop, expressions become Wasm arithmetic.
+   - `moveTo`, `lineTo`, `stroke` are called as imports, and a `draw` function is exported.
+6. **Browser execution**
+   - Runs the `.wasm` in the browser and draws on the canvas.
+   - If there are errors, the error log is shown in the same place.
 
-## 같이 정할 것
+## To decide together
 
-- 이 6단계 구성으로 갈지. 3번(AST 변환)을 2번 Parser에 합칠 수도 있지만, parse tree와 AST를 따로 보여줘야 하므로 분리를 제안한다.
-- 단계별 담당 나누기.
-- 에러가 있을 때 그래프를 아예 안 그릴지, 에러 부분만 빼고 그릴지.
+- Whether to go with these 6 steps. Step 3 (AST conversion) could be merged into step 2 (Parser), but since the parse tree and the AST must be shown separately, we propose keeping them apart.
+- Who owns which step.
+- When there are errors, whether to draw no graph at all or draw everything except the erroneous part.

@@ -1,52 +1,77 @@
-import { callStep } from "./api.js";
-import { runWasm } from "./canvas.js";
 import { EXAMPLES } from "./examples.js";
+import { runPipeline } from "./pipeline.js";
 import { STEPS } from "./steps.js";
+import { VISUALIZERS } from "./visualizers.js";
 
 const source = document.querySelector("#source");
-const errors = document.querySelector("#errors");
-const results = document.querySelector("#step-results");
-const ctx = document.querySelector("#canvas").getContext("2d");
-const boxes = new Map();
+const runButton = document.querySelector("#run");
+const canvas = document.querySelector("#canvas");
+const errorLog = document.querySelector("#error-log");
+const boxes = [];
 
 for (const example of EXAMPLES) {
   const button = document.createElement("button");
-  button.textContent = example.label;
-  button.addEventListener("click", () => { source.value = example.source; });
+  button.textContent = example.name;
+  button.addEventListener("click", () => { source.value = example.code; });
   document.querySelector("#example-buttons").append(button);
 }
 
 for (const step of STEPS) {
-  const details = document.createElement("details");
-  details.innerHTML = `<summary>${step.label}</summary><pre></pre>`;
-  results.append(details);
-  boxes.set(step.id, details.querySelector("pre"));
+  const box = document.createElement("section");
+  box.className = "step";
+  box.innerHTML = `<h2></h2><div class="step-body"></div>`;
+  box.querySelector("h2").textContent = step.name;
+  document.querySelector("#steps").append(box);
+  boxes.push({ box, body: box.querySelector(".step-body") });
 }
 
-function showDiagnostics(diagnostics = []) {
-  errors.textContent = diagnostics.map(({ line, column, message }) => `${line}:${column} ${message}`).join("\n");
+// The right panel doubles as the graph and the error log.
+function showCanvas() {
+  errorLog.hidden = true;
+  canvas.hidden = false;
 }
 
-document.querySelector("#run").addEventListener("click", async () => {
-  errors.textContent = "";
-  for (const box of boxes.values()) box.textContent = "";
-  for (const step of STEPS) {
-    try {
-      const { status, body } = await callStep(step.id, source.value);
-      boxes.get(step.id).textContent = status === 501 ? "not implemented yet" : JSON.stringify(body, null, 2);
-      if (body.diagnostics) showDiagnostics(body.diagnostics);
-      if (status !== 200 || body.ok === false) return;
-      if (step.id === "codegen" && body.result_base64) {
-        try {
-          const bytes = Uint8Array.from(atob(body.result_base64), (char) => char.charCodeAt(0));
-          await runWasm(bytes, ctx);
-        } catch (error) {
-          errors.textContent = error.message;
+function showErrors(text) {
+  canvas.hidden = true;
+  errorLog.hidden = false;
+  errorLog.textContent = text;
+}
+
+function formatDiagnostics(diagnostics) {
+  return diagnostics.map(({ kind, line, column, message }) => `${line}:${column} ${kind ? `[${kind}] ` : ""}${message}`).join("\n");
+}
+
+function resetSteps() {
+  for (const { box, body } of boxes) {
+    box.dataset.state = "idle";
+    body.replaceChildren();
+  }
+}
+
+runButton.addEventListener("click", async () => {
+  runButton.disabled = true;
+  resetSteps();
+  showCanvas();
+  try {
+    await runPipeline(STEPS, source.value, canvas, {
+      onStart: (i) => { boxes[i].box.dataset.state = "running"; },
+      onOutput: (i, output) => {
+        boxes[i].box.dataset.state = "done";
+        VISUALIZERS[STEPS[i].visualizer](boxes[i].body, output);
+      },
+      onFail: (i, { status, body }) => {
+        boxes[i].box.dataset.state = "failed";
+        if (body.diagnostics) {
+          showErrors(formatDiagnostics(body.diagnostics));
+        } else {
+          const message = status === 501 ? "not implemented yet" : (body.error ?? `HTTP ${status}`);
+          VISUALIZERS.text(boxes[i].body, message);
         }
-      }
-    } catch (error) {
-      errors.textContent = error.message;
-      return;
-    }
+      },
+    });
+  } catch (error) {
+    showErrors(error.message);
+  } finally {
+    runButton.disabled = false;
   }
 });

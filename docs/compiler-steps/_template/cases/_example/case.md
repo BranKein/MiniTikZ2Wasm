@@ -1,7 +1,7 @@
-# <케이스 이름>
+# <case name>
 
-- 종류: 정상 / syntax error / semantic error / 기타
-- 확인하려는 것: 이 케이스가 무엇을 검증하는지 한 줄로 쓴다.
-- 데모 예제 버튼으로 쓸지: 예 / 아니오
+- Kind: valid / syntax error / semantic error / other
+- What it checks: write in one line what this case verifies.
+- Use as a demo example button: yes / no
 
-(필요하면 입력이 왜 이런 모양인지, 기대 출력에서 눈여겨볼 점을 덧붙인다.)
+(If needed, add why the input has this shape and what to notice in the expected output.)

@@ -1,74 +1,74 @@
-# 데모 웹 구상 (발표용)
+# Demo Web Design (for the presentation)
 
-발표(데모)에서 보여줄 웹 페이지의 대략적인 구상. 원본은 Claude Design 캔버스의 도형과 댓글이며, 여기에 다시 읽을 수 있는 형태로 옮겼다. 세부는 아직 미정이고 나중에 구체화한다.
+A rough design of the web page shown in the presentation (demo). The source is the shapes and comments on a Claude Design canvas, transcribed here into a readable form. Details are still undecided and will be filled in later.
 
-- 원본 캔버스: https://claude.ai/artifact/WGsQgXoeFxe1q3fi2tuJCw (비공개, 소유자만 열람)
-- 캔버스에는 아트보드 없이 사각형 도형 13개와 댓글 5개만 있다. 좌표는 캔버스 px 기준이며 아래 와이어프레임의 배치 근거다.
+- Original canvas: https://claude.ai/artifact/WGsQgXoeFxe1q3fi2tuJCw (private, owner only)
+- The canvas has no artboard, only 13 rectangles and 5 comments. Coordinates are canvas px and are the basis of the wireframe below.
 
-## 한 줄 요약
+## One-line summary
 
-사용자가 MiniTikZ 코드를 입력하고 제출하면, 컴파일러 각 단계의 결과가 페이지 아래에 단계별로 출력되고, 최종 Wasm이 오른쪽 캔버스에 그림을 그린다.
+The user enters MiniTikZ code and submits it; the result of each compiler step is printed below the page, step by step, and the final Wasm draws the figure on the canvas on the right.
 
-## 와이어프레임
+## Wireframe
 
 ```
 ┌──────────────────────────────────────────────────────────┐
-│ [헤더] 프로젝트 제목 영역 (전체 폭)                        │
+│ [Header] project title area (full width)                  │
 ├──────────────────────────────────────────────────────────┤
-│ [예제 버튼들 (예시)]                                    │
+│ [Example buttons (illustrative)]                          │
 │ ┌──────────────────────┐   ┌──────────────────────┐      │
-│ │ 텍스트 입력           │   │ 렌더된 그래프          │      │
-│ │ (MiniTikZ 코드)       │   │ (HTML Canvas)         │      │
+│ │ Text input            │   │ Rendered graph        │      │
+│ │ (MiniTikZ code)       │   │ (HTML Canvas)         │      │
 │ │                      │   │                      │      │
-│ │            [제출]     │   │                      │      │
+│ │          [Submit]     │   │                      │      │
 │ └──────────────────────┘   └──────────────────────┘      │
 │ ┌──────────────────────────────────────────────────┐     │
-│ │ 단계 1 결과 (다른 단계보다 큼)                     │     │
+│ │ Step 1 result (larger than the other steps)       │     │
 │ └──────────────────────────────────────────────────┘     │
 │ ┌──────────────────────────────────────────────────┐     │
-│ │ 단계 2 결과                                       │     │
+│ │ Step 2 result                                     │     │
 │ └──────────────────────────────────────────────────┘     │
 │ ┌──────────────────────────────────────────────────┐     │
-│ │ 단계 3 결과                                       │     │
+│ │ Step 3 result                                     │     │
 │ └──────────────────────────────────────────────────┘     │
 │ ┌──────────────────────────────────────────────────┐     │
-│ │ 단계 4 결과                                       │     │
+│ │ Step 4 result                                     │     │
 │ └──────────────────────────────────────────────────┘     │
 └──────────────────────────────────────────────────────────┘
 ```
 
-## 영역별 설명
+## Areas
 
-| 영역 | 캔버스 위치 (x, y, w×h) | 내용 |
+| Area | Canvas position (x, y, w×h) | Content |
 |---|---|---|
-| 페이지 전체 | 52, 285, 1591×1839 | 파란 테두리 프레임. 페이지 한 장 |
-| 헤더 | 52, 285, 1591×130 | 빨간 띠. 프로젝트 제목 영역 |
-| 예제 입력 버튼 (예시로 4개) | y=434, 각 125×55 (x=98, 244, 390, 536) | 클릭하면 예제 코드를 입력창에 채운다 |
-| 텍스트 입력 | 98, 504, 688×363 | MiniTikZ 코드를 입력하는 곳 |
-| 제출 버튼 | 651, 882, 135×56 | 입력창 오른쪽 아래. 누르면 컴파일 시작 |
-| 렌더된 그래프 | 892, 504, 688×435 | HTML Canvas에 Wasm이 그린 결과 (Canvas로 할지는 미확정) |
-| 단계 결과 박스 (예시로 4개) | x≈99, 너비 1481 / y=973(높이 347), 1354, 1601, 1848(각 207) | 컴파일러 각 단계의 출력 |
+| Whole page | 52, 285, 1591×1839 | Blue-bordered frame. One page |
+| Header | 52, 285, 1591×130 | Red band. Project title area |
+| Example input buttons (4 as illustration) | y=434, each 125×55 (x=98, 244, 390, 536) | Clicking fills the input box with example code |
+| Text input | 98, 504, 688×363 | Where MiniTikZ code is typed |
+| Submit button | 651, 882, 135×56 | Bottom right of the input box. Starts compilation |
+| Rendered graph | 892, 504, 688×435 | Result drawn by Wasm on an HTML Canvas (whether to use Canvas is not final) |
+| Step result boxes (4 as illustration) | x≈99, width 1481 / y=973 (height 347), 1354, 1601, 1848 (207 each) | Output of each compiler step |
 
-## 동작 방식 (댓글에서)
+## Behavior (from the comments)
 
-- 컴파일러 각 단계는 결과를 그대로 출력한다. 예: 텍스트 → parse tree, parse tree → 그다음 단계.
-- **각 단계를 각각 별도의 백엔드 API로 구현한다.** 단계마다 API가 따로 있고, 프런트는 단계별 결과를 받아 각 박스에 보여준다.
-- 예제 입력 버튼에 무엇이 들어갈지는 아직 미정이다. 정상, syntax error, semantic error 등을 생각 중이며, 수업 요구사항(최소 2종류 에러, [project-notes.md](project-notes.md) 참고)을 보여줄 예제는 필요하다.
+- Each compiler step prints its result as is. E.g. text → parse tree, parse tree → next step.
+- **Each step is implemented as its own backend API.** Every step has a separate API, and the front end receives each step's result and shows it in its box.
+- What goes into the example input buttons is undecided. We are thinking of valid input, syntax error, semantic error, etc. We need examples that show the course requirement (at least 2 kinds of errors, see [project-notes.md](project-notes.md)).
 
-## 에러 표시 (결정)
+## Error display (decided)
 
-- 오른쪽 "렌더된 그래프" 영역을 에러 로그와 같이 쓴다.
-  - 에러가 있으면: 그 자리에 에러 로그를 띄운다 (line/column 위치 포함).
-  - 에러가 없으면: 그 자리에 그래프를 그린다.
-- 문법 에러가 있어도 해당 부분만 건너뛰고 뒤를 계속 컴파일한다([project-notes.md](project-notes.md)). 에러 로그에는 건너뛴 에러를 모두 모아 보여준다.
+- The "Rendered graph" area on the right doubles as the error log.
+  - If there are errors: show the error log there (with line/column positions).
+  - If there are no errors: draw the graph there.
+- Even with syntax errors, skip only the offending part and keep compiling ([project-notes.md](project-notes.md)). The error log collects and shows all skipped errors.
 
-## 확장성 요구사항
+## Extensibility requirements
 
-- **예제 입력 버튼**: 어떤 예제가 들어갈지는 미정이다. 나중에 예제를 더 추가할 수 있도록 확장 가능한 형태로 개발한다. 예: 예제 목록을 데이터(배열/설정 파일)로 두고 버튼은 목록에서 생성한다.
-- **컴파일러 단계**: 어떤 단계가 있을지도 미정이다. 단계를 나중에 추가·변경할 수 있도록 확장 가능한 형태로 개발한다. 예: 단계 목록을 데이터로 두고, 단계마다 API와 결과 박스를 목록에서 생성한다.
+- **Example input buttons**: Which examples go in is undecided. Build it so more examples can be added later. E.g. keep the example list as data (array/config file) and generate the buttons from it.
+- **Compiler steps**: Which steps exist is also undecided. Build it so steps can be added or changed later. E.g. keep the step list as data and generate each step's API and result box from it.
 
-## 미정인 것
+## Undecided
 
-- 단계 결과 박스의 실제 개수와 내용. 캔버스의 4개는 예시일 뿐이며, 단계 수만큼 박스를 만든다. 후보 단계는 Lexer(토큰), Parse tree, AST, Semantic, Wasm이다. 요구사항상 parse tree 다음에 AST도 보여야 한다.
-- 렌더 영역을 정말 HTML Canvas로 할지. 제안서에서는 Wasm이 Canvas 2D API를 import해 그린다.
-- 실제 시각 디자인(색, 글꼴 등). 캔버스는 레이아웃 도형뿐이다.
+- The actual number and content of step result boxes. The 4 on the canvas are only an illustration; make as many boxes as there are steps. Candidate steps are Lexer (tokens), Parse tree, AST, Semantic, Wasm. By the requirements the AST must also be shown after the parse tree.
+- Whether the render area really is an HTML Canvas. In the proposal, Wasm imports the Canvas 2D API to draw.
+- The actual visual design (colors, fonts, etc.). The canvas has layout shapes only.

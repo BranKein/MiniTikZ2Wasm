@@ -1,61 +1,61 @@
-# <번호>. <단계 이름>
+# <number>. <step name>
 
-> 이 `_template/` 폴더 전체를 `docs/compiler-steps/<번호>-<이름>/`로 복사해서 시작한다. 이 README를 채우고, `cases/_example/`은 지우거나 이름을 바꿔 실제 케이스로 쓴다. 모르는 부분은 "미정"으로 둔다. 공통 규칙은 [../README.md](../README.md)를 본다.
+> Start by copying this whole `_template/` folder to `docs/compiler-steps/<number>-<name>/`. Fill in this README, and delete or rename `cases/_example/` to use it as a real case. Leave unknown parts as "undecided". For common rules see [../README.md](../README.md).
 
-- 상태: 미정 / 초안 / 확정
-- 이전 단계: <단계 이름 또는 "없음(원본 소스)">
-- 다음 단계: <단계 이름 또는 "없음(최종)">
+- Status: undecided / draft / final
+- Previous step: <step name or "none (raw source)">
+- Next step: <step name or "none (final)">
 
-## 1. 하는 일
+## 1. What it does
 
-이 단계가 무엇을 처리하는지 한두 문단으로 쓴다. 왜 필요한지, 이 단계에서 하지 않는 일은 무엇인지도 적는다.
+Write in one or two paragraphs what this step processes. Also say why it is needed and what it does not do.
 
-### 처리 방식
+### How it works
 
-- 알고리즘 / 규칙 요약 (예: 사용하는 RE, CFG 규칙, 순회 방법)
-- 이 단계에서 발견하는 에러 종류
+- Summary of the algorithm / rules (e.g. the RE used, CFG rules, traversal method)
+- Kinds of errors found in this step
 
-## 2. 입력
+## 2. Input
 
-- 출처: 이전 단계의 출력 / 사용자 입력
-- 형식: (JSON 스키마 또는 필드 설명)
-
-```json
-{}
-```
-
-## 3. 출력
-
-- 형식: (JSON 스키마 또는 필드 설명)
-- 화면에 보여주는 방식: (표, 트리, 코드 등)
+- Source: previous step's output / user input
+- Format: (JSON schema or field description)
 
 ```json
 {}
 ```
 
-## 4. 에러
+## 3. Output
 
-| 종류 | 조건 | 메시지 예시 | 위치 정보 |
+- Format: (JSON schema or field description)
+- How it is shown on screen: (table, tree, code, etc.)
+
+```json
+{}
+```
+
+## 4. Errors
+
+| Kind | Condition | Example message | Position info |
 |---|---|---|---|
-| syntax / semantic 등 | 언제 발생하는가 | `undefined node 'b'` | line, column |
+| syntax / semantic etc. | when it occurs | `undefined node 'b'` | line, column |
 
-- 에러가 났을 때의 복구 방식 (어디까지 건너뛰고 계속하는가):
-- 에러가 있을 때의 출력 형태:
+- Recovery on error (how far we skip and continue):
+- Output shape when there are errors:
 
 ## 5. API
 
-- 엔드포인트: `POST /api/<이름>`
-- 요청 본문: (입력과 같은 형식)
-- 응답 본문: (출력 + 에러 목록)
+- Endpoint: `POST /api/<name>`
+- Request body: (same format as the input)
+- Response body: (output + error list)
 
-## 6. 예시와 테스트 케이스
+## 6. Examples and test cases
 
-이 단계의 예제이자 테스트 케이스는 [cases/](cases/) 폴더에 둔다. 케이스 하나는 폴더 하나이고, 입력과 기대 출력이 한 쌍이다. 구조와 규칙은 [../README.md](../README.md)의 "케이스 구조"를 따른다.
+Examples and test cases for this step live in [cases/](cases/). One case is one folder, a pair of input and expected output. Structure and rules follow "Case structure" in [../README.md](../README.md).
 
-| 케이스 | 종류 | 설명 |
+| Case | Kind | Description |
 |---|---|---|
-| `cases/<케이스 이름>/` | 정상 / syntax error / semantic error 등 | 한 줄 설명 |
+| `cases/<case name>/` | valid / syntax error / semantic error etc. | one-line description |
 
-## 7. 미정 / 메모
+## 7. Undecided / notes
 
-- 아직 정하지 않은 것, 다른 단계와 맞춰야 하는 것
+- Things not decided yet, things to align with other steps

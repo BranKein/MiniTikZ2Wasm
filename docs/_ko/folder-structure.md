@@ -31,7 +31,7 @@ MiniTikZ2Wasm/
 └── web-fe/                    # 프런트엔드 (HTML/CSS/JS, 빌드 도구 없음)
     ├── index.html
     ├── css/style.css
-    └── js/                    # main, api, canvas, steps, examples, config
+    └── js/                    # main, api, pipeline, steps, visualizers, examples, canvas, config
 ```
 
 ## 의존 방향
@@ -77,7 +77,12 @@ web-fe  --HTTP(JSON)-->  web-be  --import-->  mini-tikz-2-wasm
 
 - React 없이 정적 HTML/CSS/JS(ES module). 번들러·npm 없음. 백엔드가 서빙하므로 별도 서버가 없고, API 호출은 상대 경로를 쓴다.
 - 레이아웃은 [demo-web-design.md](demo-web-design.md) 구상(입력 상자, 예제 버튼, 캔버스, 단계별 결과 상자)을 따른다.
-- 확장 가능해야 하는 두 목록을 데이터로 분리했다: 예제 버튼(`js/examples.js`), 컴파일러 단계(`js/steps.js`). 항목을 추가하면 UI 가 따라 늘어난다.
+- 확장 가능해야 하는 두 목록을 데이터로 분리했다. 항목을 추가하면 UI 가 따라 늘어난다.
+  - 예제 버튼: `js/examples.js`, 항목 `{ name, code }`. 버튼을 누르면 입력 상자가 채워진다.
+  - 컴파일러 단계: `js/steps.js`, 항목 `{ name, url, visualizer }`와 선택 항목 `getOutput`(응답에서 출력값 고르기, 기본 `body.result`), `onResult`(성공 후 부수 효과, 예: 캔버스에서 Wasm 실행). `js/pipeline.js` 가 목록 순서대로 단계를 호출하고, 요청 body `{ source, input }` 을 보낸다. `input` 은 이전 단계의 출력이다(첫 단계는 소스).
+  - 출력 visualizer: `js/visualizers.js` 는 이름으로 찾는 레지스트리이고, 단계가 `visualizer` 로 하나를 고른다. 지금은 `text` 뿐이며, 트리 보기 같은 것은 레지스트리에 추가한다.
+- 오른쪽 패널은 캔버스를 보여 주다가, 단계가 diagnostics 를 돌려주면 오류 로그(줄·열 포함)를 보여 준다.
+- 백엔드는 아직 `input` 을 받지 않는다(`source` 로 체인을 처음부터 다시 돌린다). 목표는 단계 API 마다 입력을 받아 출력을 돌려주는 것이다.
 - `js/canvas.js` 가 Wasm 이 import 할 그리기 함수(`moveTo`, `lineTo`, `stroke`, …)를 Canvas 2D API 로 감싼다. import 계약은 아래 "결정"을 본다.
 
 ## 개발 흐름 (로컬)

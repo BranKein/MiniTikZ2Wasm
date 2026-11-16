@@ -31,7 +31,7 @@ MiniTikZ2Wasm/
 └── web-fe/                    # front end (HTML/CSS/JS, no build tool)
     ├── index.html
     ├── css/style.css
-    └── js/                    # main, api, canvas, steps, examples, config
+    └── js/                    # main, api, pipeline, steps, visualizers, examples, canvas, config
 ```
 
 ## Dependency direction
@@ -77,7 +77,12 @@ web-fe  --HTTP(JSON)-->  web-be  --import-->  mini-tikz-2-wasm
 
 - Static HTML/CSS/JS (ES modules), no React. No bundler, no npm. Served by the backend (no separate server); API calls use relative paths.
 - The layout follows the design in [demo-web-design.md](demo-web-design.md) (input box, example buttons, canvas, per-step result boxes).
-- The two lists that must be extensible are kept as data: example buttons (`js/examples.js`) and compiler steps (`js/steps.js`). Adding an entry grows the UI automatically.
+- The two lists that must be extensible are kept as data. Adding an entry grows the UI automatically.
+  - Example buttons: `js/examples.js`, entries `{ name, code }`. Clicking a button fills the input box.
+  - Compiler steps: `js/steps.js`, entries `{ name, url, visualizer }`, plus optional `getOutput` (pick the output value from the response; default `body.result`) and `onResult` (side effect after success, e.g. run the Wasm on the canvas). `js/pipeline.js` calls the steps in list order and sends each step the request body `{ source, input }`, where `input` is the previous step's output (the first step gets the source).
+  - Output visualizers: `js/visualizers.js` is a registry keyed by name; a step picks one with `visualizer`. Only `text` exists so far; add others (e.g. a tree view) to the registry.
+- The right-hand panel shows the canvas, or the error log (with line/column) when a step returns diagnostics.
+- The backend does not take `input` yet (it re-runs the chain from `source`). The target is for each step API to take its input and return its output.
 - `js/canvas.js` wraps the drawing functions the Wasm imports (`moveTo`, `lineTo`, `stroke`, …) around the Canvas 2D API. See "Decisions" below for the import contract.
 
 ## Local development flow

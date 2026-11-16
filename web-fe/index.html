@@ -7,20 +7,23 @@
     <link rel="stylesheet" href="css/style.css">
   </head>
   <body>
-    <header><h1>MiniTikZ2Wasm</h1></header>
-    <main class="columns">
-      <section><textarea id="source">\begin{tikzpicture}
-  \node (A) at (0,0) {};
-  \node (B) at (0,2) {};
-  \draw (A) -- (B);
-  \foreach \i in {1,...,3} {
-    \draw (\i, 0) -- (\i, {1 + cos(60)});
-  }
-\end{tikzpicture}</textarea><div id="example-buttons"></div><button id="run">Compile &amp; Run</button></section>
-      <section><canvas id="canvas" width="400" height="400"></canvas></section>
+    <header>
+      <h1>MiniTikZ2Wasm</h1>
+    </header>
+    <main>
+      <div id="example-buttons"></div>
+      <div class="columns">
+        <section class="panel">
+          <textarea id="source" spellcheck="false"></textarea>
+          <button id="run">Submit</button>
+        </section>
+        <section class="panel">
+          <canvas id="canvas" width="400" height="400"></canvas>
+          <pre id="error-log" hidden></pre>
+        </section>
+      </div>
+      <div id="steps"></div>
     </main>
-    <div id="step-results"></div>
-    <div id="errors"></div>
     <script type="module" src="js/main.js"></script>
   </body>
 </html>

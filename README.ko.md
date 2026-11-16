@@ -4,7 +4,7 @@
 
 English: [README.md](README.md)
 
-> 상태: 초기 스캐폴딩·제안 단계. 폴더 구조와 컴파일러 단계는 아직 논의 중이며 확정된 것이 없다.
+> 상태: 초기 스캐폴딩 단계. 폴더 구조는 결정됐고, 컴파일러 단계는 아직 논의 중이다.
 
 ## 예제
 
@@ -64,7 +64,7 @@ uv run --package web-be pytest
 - [프로젝트 제안서](docs/_ko/project-proposal.md)
 - [프로젝트 노트 (수업 제약)](docs/_ko/project-notes.md)
 - [데모 웹 구상](docs/_ko/demo-web-design.md)
-- [폴더 구조 제안](docs/_ko/folder-structure.md)
+- [폴더 구조](docs/_ko/folder-structure.md)
 - [컴파일러 단계](docs/_ko/compiler-steps/README.md), [단계 제안](docs/_ko/compiler-steps/proposal.md)
 
 ## 기여

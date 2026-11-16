@@ -1,6 +1,6 @@
-# 폴더 구조 제안
+# 폴더 구조
 
-> 상태: **제안 (논의 단계)**. 팀원과 합의된 결정이 아니다. 합의되면 이 문서의 상태를 갱신하고, 바뀌면 [AGENTS.md](../../AGENTS.md)도 같이 고친다.
+> 상태: **결정됨**. 아래 폴더 구조는 팀원과 합의했다. 컴파일러 단계 목록은 아직 열려 있다(맨 끝 참고). 바뀌면 [AGENTS.md](../../AGENTS.md)도 같이 고친다.
 
 ## 한 줄 요약
 
@@ -65,7 +65,7 @@ web-fe  --HTTP(JSON)-->  web-be  --import-->  mini-tikz-2-wasm
   - `GET /health`
   - `GET /api/steps` — 단계 이름 목록 (프런트가 단계 상자를 만드는 데 쓸 수 있다)
   - `POST /api/{step}` — body `{"source": "..."}`. 소스에서 해당 단계까지 실행한 결과를 돌려준다. ([demo-web-design.md](demo-web-design.md)의 "단계별 백엔드 API 하나씩"에 해당)
-- 응답 규약(제안)
+- 응답 규약
   - 성공: `{"ok": true, "result": ...}`
   - 컴파일 오류: HTTP 200, `{"ok": false, "diagnostics": [{kind, message, line, column}, ...]}`
   - 미구현 단계: HTTP 501 (스캐폴딩 상태)
@@ -107,7 +107,7 @@ docker compose up --build
   - Python 패키지 두 개와 프런트 폴더로 나뉜다. uv 워크스페이스와 Docker 가 대부분 가려 주지만 앱 하나일 때보다 움직이는 부분이 많다.
   - 백엔드가 단계 함수를 체인으로 다시 호출하는 방식이라, 단계가 늘면 중복 실행이 생길 수 있다. 처음엔 단순함을 우선한다.
 
-## 결정 (작성자 제안, 팀원과 확인 필요)
+## 결정 (합의됨)
 
 1. **이름:** `mini-tikz-2-wasm`(폴더·배포 이름)과 `mini_tikz_2_wasm`(import 이름)을 유지한다.
 2. **서빙:** 프로젝트 폴더는 지금처럼 나누되, 백엔드가 `web-fe/` 정적 파일을 서빙한다 (origin·포트 하나, CORS 없음). Docker 와 docker compose 를 제공한다.
@@ -115,6 +115,6 @@ docker compose up --build
 4. **도구:** 레포 루트에 워크스페이스를 둔 `uv`.
 5. **Python:** 3.11 이상.
 
-## 열린 질문 (논의 필요)
+## 열린 질문
 
 1. **컴파일러 단계 목록.** 6단계(`lex / parse / ast / analyze / codegen` + 브라우저 실행)로 가는 쪽으로 기울어 있지만, [compiler-steps/proposal.md](compiler-steps/proposal.md) 의 단계 논의에서 함께 결정한다. 그때까지 스캐폴딩의 4단계(`lex / parse / analyze / codegen`)는 임시다.

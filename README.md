@@ -4,7 +4,7 @@ A compiler-course project. It compiles **MiniTikZ** (a small subset and modified
 
 Korean version: [README.ko.md](README.ko.md)
 
-> Status: early scaffolding and proposal stage. The folder structure and compiler steps are still under discussion; nothing is final.
+> Status: early scaffolding stage. The folder structure is decided; the compiler steps are still under discussion.
 
 ## Example
 
@@ -64,7 +64,7 @@ uv run --package web-be pytest
 - [Project proposal](docs/project-proposal.md)
 - [Project notes (course constraints)](docs/project-notes.md)
 - [Demo web design](docs/demo-web-design.md)
-- [Folder structure proposal](docs/folder-structure.md)
+- [Folder structure](docs/folder-structure.md)
 - [Compiler steps](docs/compiler-steps/README.md) and [step proposal](docs/compiler-steps/proposal.md)
 
 ## Contributing

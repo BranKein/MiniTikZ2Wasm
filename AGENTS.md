@@ -47,7 +47,7 @@ It compiles MiniTikZ (a small subset/modified version of TikZ) into a WebAssembl
 - Compiler stages run on a backend server, not in the browser; only the generated Wasm runs in the browser.
 - Errors must be reported with line and column positions.
 
-## Folder structure (proposal, not yet agreed with the teammate)
+## Folder structure (decided)
 
 Details and open questions: [docs/folder-structure.md](docs/folder-structure.md).
 

@@ -1,6 +1,6 @@
-# Folder Structure Proposal
+# Folder Structure
 
-> Status: **proposal (under discussion)**. Not yet agreed with the teammate. Once agreed, update the status here, and update [AGENTS.md](../AGENTS.md) whenever it changes. Korean version: [_ko/folder-structure.md](_ko/folder-structure.md).
+> Status: **decided**. The folder structure below was agreed with the teammate. The compiler step list is still open (see the end). Update [AGENTS.md](../AGENTS.md) whenever this changes. Korean version: [_ko/folder-structure.md](_ko/folder-structure.md).
 
 ## One-line summary
 
@@ -65,7 +65,7 @@ web-fe  --HTTP(JSON)-->  web-be  --import-->  mini-tikz-2-wasm
   - `GET /health`
   - `GET /api/steps` — list of step names (the front end may use it to build step boxes)
   - `POST /api/{step}` — body `{"source": "..."}`. Returns the result of running from the source up to that step. (Matches "one backend API per step" in [demo-web-design.md](demo-web-design.md).)
-- Response convention (proposal)
+- Response convention
   - Success: `{"ok": true, "result": ...}`
   - Compile error: HTTP 200, `{"ok": false, "diagnostics": [{kind, message, line, column}, ...]}`
   - Unimplemented step: HTTP 501 (scaffold state)
@@ -107,7 +107,7 @@ Workspace members are installed in editable mode, so compiler changes show up im
   - Two Python packages plus a front end folder; the uv workspace and Docker hide most of that, but it is more moving parts than one app.
   - The backend re-runs the step functions as a chain, so more steps can mean repeated work. We favor simplicity at first.
 
-## Decisions (proposed by the author; still to confirm with the teammate)
+## Decisions (agreed)
 
 1. **Names:** keep `mini-tikz-2-wasm` (folder / distribution) and `mini_tikz_2_wasm` (import).
 2. **Serving:** keep the project folders separate, but the backend serves the static files of `web-fe/` (one origin, one port, no CORS). Docker and docker compose are provided.
@@ -115,6 +115,6 @@ Workspace members are installed in editable mode, so compiler changes show up im
 4. **Tooling:** `uv` with a workspace at the repo root.
 5. **Python:** 3.11 or newer.
 
-## Open questions (to discuss)
+## Open questions
 
 1. **Compiler step list.** Leaning toward 6 steps (`lex / parse / ast / analyze / codegen` plus browser execution), but this is decided together with the step discussion in [compiler-steps/proposal.md](compiler-steps/proposal.md). The scaffold's 4 steps (`lex / parse / analyze / codegen`) are placeholders until then.

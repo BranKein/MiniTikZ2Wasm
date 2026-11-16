@@ -8,6 +8,13 @@
 - When changing either file, update both in the same change. Relative links inside `docs/_ko/` stay within `docs/_ko/`.
 - This file (`AGENTS.md`) is English only.
 
+## Commit messages
+
+- Format: `<keyword>: <message>`. Keywords: `feat`, `bug`, `refactor`, `docs`, `chore`, `test`, etc.
+- Keep the message short (one line, about 70 characters or fewer) and focus on why the change was made rather than listing what changed. Add a body only when the reason is not obvious.
+- Commit only when asked. Stage specific paths instead of `git add -A`, so local or unrelated files are not committed. Never skip hooks or amend/force-push shared history unless asked.
+- If an AI tool made the change, a `Co-Authored-By` trailer at the end of the message is fine.
+
 ## Project
 
 **MiniTikZ2Wasm** — final project for a compiler course. Full proposal: [docs/project-proposal.md](docs/project-proposal.md).

@@ -1,10 +1,12 @@
 # web-be
 
-([English](README.md)) 컴파일러 패키지를 먼저 설치한다:
+([English](README.md)) 저장소 루트에서 실행한다:
 
 ```sh
-pip install -e ../mini-tikz-2-wasm
-pip install -e .[dev]
-uvicorn app.main:app --reload --port 8000
-pytest
+uv sync --all-packages
+uv run --package web-be uvicorn app.main:app --reload --port 8000 --app-dir web-be
+uv run --package web-be pytest
+docker compose up --build
 ```
+
+http://localhost:8000 을 연다. 백엔드가 프런트엔드를 제공한다.

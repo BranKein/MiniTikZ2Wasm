@@ -1,10 +1,6 @@
 # web-fe
 
-([English](README.md))
+([English](README.md)) 백엔드가 이 프런트엔드를 제공하므로 별도 정적 서버가 필요 없다.
 
-```sh
-cd web-fe
-python3 -m http.server 5173
-```
-
-http://localhost:5173 을 연다. 백엔드는 8000 포트에서 실행 중이어야 한다.
+저장소 루트에서 백엔드를 시작한 뒤 http://localhost:8000 을 연다.
+파일을 수정하고 브라우저를 새로고침하면 변경 사항을 볼 수 있다.

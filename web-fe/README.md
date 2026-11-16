@@ -1,8 +1,6 @@
 # web-fe
 
-```sh
-cd web-fe
-python3 -m http.server 5173
-```
+The backend serves this front end; no separate static server is needed.
 
-Open http://localhost:5173. The backend must run on port 8000.
+Start the backend from the repository root, then open http://localhost:8000.
+Edit these files and refresh the browser to see changes.

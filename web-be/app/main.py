@@ -1,19 +1,16 @@
 """FastAPI facade for the compiler stages."""
 
+import os
+from pathlib import Path
+
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from mini_tikz_2_wasm import CompileError, STEPS
 
 app = FastAPI(title="MiniTikZ2Wasm backend")
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 
 class StepRequest(BaseModel):
@@ -53,3 +50,8 @@ def make_step_handler(target_name, target_fn):
 
 for step_name, step_fn in STEPS:
     app.post(f"/api/{step_name}")(make_step_handler(step_name, step_fn))
+
+
+FE_DIR = Path(os.environ.get("WEB_FE_DIR", Path(__file__).resolve().parents[2] / "web-fe"))
+if FE_DIR.is_dir():
+    app.mount("/", StaticFiles(directory=FE_DIR, html=True), name="web-fe")

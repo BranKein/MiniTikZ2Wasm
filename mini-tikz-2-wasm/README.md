@@ -2,7 +2,9 @@
 
 Pure-Python MiniTikZ compiler package scaffold.
 
+From the repository root:
+
 ```sh
-pip install -e .[dev]
-pytest
+uv sync
+uv run --package mini-tikz-2-wasm pytest
 ```

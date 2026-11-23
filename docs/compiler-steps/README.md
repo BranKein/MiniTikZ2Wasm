@@ -2,7 +2,7 @@
 
 This folder holds one document per compiler step: what the step does, what it takes as input and what it produces. This README contains only what is common to all steps.
 
-The list of steps is not decided yet. Steps must be easy to add or change later (see the extensibility requirements in [../demo-web-design.md](../demo-web-design.md)).
+The table below lists the current draft pipeline. Steps must be easy to add or change later (see the extensibility requirements in [../demo-web-design.md](../demo-web-design.md)).
 
 ## Folder structure
 
@@ -53,7 +53,7 @@ Rules:
 
 ## Common principles
 
-- Implement each step as a separate backend API; input and output are exchanged as JSON.
+- The five compiler stages each have a separate backend API in the draft design and exchange data as JSON. Browser execution runs the generated Wasm locally.
 - Each step's output must be showable as is in the per-step result box on the page.
 - Even with syntax errors, skip only the offending part (record the error) and keep processing. Each step collects errors with line/column and returns them.
 - If there are errors, show the error log; otherwise draw the graph.
@@ -63,4 +63,9 @@ Rules:
 
 | No. | Step | Folder | Status |
 |---|---|---|---|
-| - | (undecided) | - | - |
+| 1 | Lexer | [`01-lexer/`](01-lexer/README.md) | Draft |
+| 2 | Parser | [`02-parser/`](02-parser/README.md) | Draft |
+| 3 | AST conversion | [`03-ast/`](03-ast/README.md) | Draft |
+| 4 | Semantic analysis | [`04-semantic/`](04-semantic/README.md) | Draft |
+| 5 | Wasm code generation | [`05-codegen/`](05-codegen/README.md) | Draft |
+| 6 | Browser execution | [`06-browser-execution/`](06-browser-execution/README.md) | Draft |

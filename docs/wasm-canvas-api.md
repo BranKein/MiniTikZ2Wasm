@@ -55,16 +55,16 @@ pixel_x = originX + x * scale
 pixel_y = originY - y * scale        (the minus flips the y axis; canvas y grows downward)
 ```
 
-Current view (`makeCanvasImports` in `canvas.js`), for the 400×400 canvas in `index.html`:
+The view is **fitted to the figure** by the host, so the module never has to care about where its points are. `runWasm` first runs `draw` once with measuring imports that record every finite point, then picks the view (`fitView` in `canvas.js`):
 
-| Setting | Value |
+| Setting | Rule |
 |---|---|
-| `scale` | 80 px per math unit |
-| `originX` | 40 px |
-| `originY` | `canvas.height - 40` = 360 px |
-| Visible math range | x ∈ [−0.5, 4.5], y ∈ [−0.5, 4.5] |
+| Margin | 40 px on every side of the canvas |
+| `scale` | the largest value that fits the bounding box inside the margin, **at most 100 px per math unit** (so a tiny figure is not blown up); a zero-width or zero-height box (single point, straight line) does not limit it |
+| Placement | the bounding box is centered; x and y use the same scale (no distortion) |
+| Empty figure | default view: `scale` 80, `originX` 40, `originY` `canvas.height - 40` |
 
-So the reference program (x = 0…3, y = 0…2.5) fits. Points outside the range are simply clipped by the canvas. Auto-fitting the view to the figure is not done (see open items).
+So any figure is fully visible, whatever its coordinates. Points with `NaN` or ±∞ are ignored when fitting. `makeCanvasImports(ctx, view)` still takes an explicit `view` (the default above), which the tests use.
 
 Only the point coordinates are scaled. The `fillCircle` radius `r` is **pixels** and is not scaled.
 
@@ -72,9 +72,11 @@ Only the point coordinates are scaled. The `fillCircle` radius `r` is **pixels**
 
 `runWasm(bytes, ctx)` in `canvas.js`, in order:
 
-1. `WebAssembly.instantiate(bytes, { env: { moveTo, lineTo, stroke, fillCircle, sin, cos } })`. It fails here on a missing import, a signature mismatch, or invalid bytes.
-2. `ctx.clearRect(...)` over the whole canvas, then `ctx.beginPath()`.
+1. **Measuring pass.** `WebAssembly.instantiate` with imports that draw nothing and only record points, then `draw()`. The view is computed from the recorded points (see "Coordinates"). It fails here on a missing import, a signature mismatch, or invalid bytes.
+2. **Drawing pass.** Instantiate again with `{ env: { moveTo, lineTo, stroke, fillCircle, sin, cos } }` bound to the Canvas and the chosen view, then `ctx.clearRect(...)` over the whole canvas and `ctx.beginPath()`.
 3. `instance.exports.draw()`.
+
+Because `draw` runs twice (once per pass), it must be **deterministic and have no effect except through the imports**: no `start` function, no state kept across calls, no dependence on how often it ran.
 
 Drawing style is the Canvas default: **black, 1 px lines, black fill**. There is no import to change color or line width.
 
@@ -152,7 +154,6 @@ Adding or changing an import touches three places; do them together:
 ## Open items
 
 1. **Confirm `sin`/`cos`.** They are a proposal: degrees (the reference program's `1 + cos(60) = 1.5` needs degrees) and host-provided. The alternative is generating an approximation inside Wasm, which would remove the two imports but adds code-generation work. If the owner wants radians, change `DEG` in `canvas.js` and the table above together.
-2. **Auto-fit view.** The view is fixed (scale 80, origin 40/360). A figure outside x, y ∈ [−0.5, 4.5] is cut off. Choosing the view from the figure would need either a host-side bounding-box pass or extra imports.
-3. **Style (out of scope).** MiniTikZ has no style options, so there are no color, line width, or dot-radius imports; the host uses Canvas defaults. Adding style to the language means changing this contract. The dot radius is not a host default: the generator passes it to `fillCircle`, so agree a constant with the codegen owner (3 px in the example).
-4. **Node text.** Node labels (`{text}`) are not part of the language and no text-drawing import exists. If labels are added, a `fillText`-style import is needed.
-5. **Runtime guards.** Whether the generated code checks for division by zero or negative `sqrt` at run time (values that depend on a loop variable) is open; see [06-browser-execution](compiler-steps/06-browser-execution/README.md).
+2. **Style (out of scope).** MiniTikZ has no style options, so there are no color, line width, or dot-radius imports; the host uses Canvas defaults. Adding style to the language means changing this contract. The dot radius is not a host default: the generator passes it to `fillCircle`, so agree a constant with the codegen owner (3 px in the example).
+3. **Node text.** Node labels (`{text}`) are not part of the language and no text-drawing import exists. If labels are added, a `fillText`-style import is needed.
+4. **Runtime guards.** Whether the generated code checks for division by zero or negative `sqrt` at run time (values that depend on a loop variable) is open; see [06-browser-execution](compiler-steps/06-browser-execution/README.md).

@@ -12,7 +12,7 @@ Generate the Wasm module that the browser executes.
 
 ### How it works
 
-- Emit Wasm arithmetic instructions for expressions and Wasm control flow for `\foreach`. Import drawing operations from the Canvas host and export `draw()`.
+- Emit Wasm arithmetic instructions for expressions and Wasm control flow for `\foreach`. Import drawing operations from the Canvas host and export `draw()`. The exact imports, signatures, coordinates and drawing rules are in [../../wasm-canvas-api.md](../../wasm-canvas-api.md).
 - Report a failure to generate the module.
 
 ## 2. Input

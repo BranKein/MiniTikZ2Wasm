@@ -53,7 +53,7 @@ web-fe  --HTTP(JSON)-->  web-be  --import-->  mini-tikz-2-wasm
 
 - 배포 이름 `mini-tikz-2-wasm`, import 이름 `mini_tikz_2_wasm` (src 레이아웃).
 - 컴파일러 단계마다 모듈 하나, 함수 하나: `lex`, `parse`, `analyze`, `codegen`.
-- `STEPS` 는 `[("lex", lex), ("parse", parse), ...]` 순서 목록이다. 백엔드는 이 목록을 돌며 엔드포인트를 만든다. **단계가 아직 확정되지 않았으므로** 단계를 추가·삭제할 때는 이 목록만 고치면 되게 했다.
+- `STEPS` 는 `[("lex", lex), ("parse", parse), ("ast", build_ast), ...]` 순서 목록이다. 백엔드는 이 목록을 돌며 엔드포인트를 만든다. 모든 단계는 JSON 호환 데이터를 받아 `StepResult(output, errors)` 를 돌려준다. **단계가 아직 확정되지 않았으므로** 단계를 추가·삭제할 때는 이 목록만 고치면 되게 했다.
 - 오류는 `Diagnostic(kind, message, line, column)` 로 모은다. 한 번에 여러 개를 모으는 것은 "구문 오류에서 복구하고 계속 컴파일" 요구사항을 위한 것이다.
 - 단계의 입력·출력·오류·케이스 문서는 [compiler-steps/](compiler-steps/README.md)에 둔다. 코드 구조와 문서 구조의 단계 이름을 맞춘다.
 - 테스트는 이 패키지 안(`tests/`)에서 `pytest` 로 돌린다. 웹 없이 컴파일러만 검증할 수 있다.
@@ -64,12 +64,11 @@ web-fe  --HTTP(JSON)-->  web-be  --import-->  mini-tikz-2-wasm
 - 엔드포인트
   - `GET /health`
   - `GET /api/steps` — 단계 이름 목록 (프런트가 단계 상자를 만드는 데 쓸 수 있다)
-  - `POST /api/{step}` — body `{"source": "..."}`. 소스에서 해당 단계까지 실행한 결과를 돌려준다. ([demo-web-design.md](demo-web-design.md)의 "단계별 백엔드 API 하나씩"에 해당)
+  - `POST /api/{step}` — body `{"input": ...}`: 첫 단계는 MiniTikZ 소스, 나머지는 이전 단계의 `output`. 해당 단계의 패키지 함수만 호출한다. ([demo-web-design.md](demo-web-design.md)의 "단계별 백엔드 API 하나씩"에 해당)
 - 응답 규약
-  - 성공: `{"ok": true, "result": ...}`
-  - 컴파일 오류: HTTP 200, `{"ok": false, "diagnostics": [{kind, message, line, column}, ...]}`
+  - HTTP 200, `{"output": ..., "errors": [{kind, message, line, column}, ...]}`. 성공이면 `errors` 가 비어 있고, 오류가 있으면 `output` 은 복구된 부분 결과이거나 `null` 이다
   - 미구현 단계: HTTP 501 (스캐폴딩 상태)
-- 코드 생성 결과(바이트)는 JSON 에 넣기 위해 base64 로 인코딩해 줄 예정이다 (`result_base64`).
+- 코드 생성 결과(바이트)는 JSON 에 넣기 위해 base64 로 인코딩해 준다: `output` 이 `{"wasmBase64": "..."}` 가 된다.
 - 정적 파일: 백엔드가 `web-fe/` 도 `/` 에서 같이 서빙한다 (FastAPI `StaticFiles`, API 라우트 뒤에 마운트). 프런트와 API 가 같은 origin·같은 포트(8000)라 CORS 설정이 필요 없다. 폴더는 환경변수 `WEB_FE_DIR` 로 바꿀 수 있다.
 - Docker: `web-be/Dockerfile`(빌드 컨텍스트 = 레포 루트)과 `docker-compose.yml` 로 백엔드와 정적 프런트를 컨테이너 하나로 띄운다.
 
@@ -79,10 +78,9 @@ web-fe  --HTTP(JSON)-->  web-be  --import-->  mini-tikz-2-wasm
 - 레이아웃은 [demo-web-design.md](demo-web-design.md) 구상(입력 상자, 예제 버튼, 캔버스, 단계별 결과 상자)을 따른다.
 - 확장 가능해야 하는 두 목록을 데이터로 분리했다. 항목을 추가하면 UI 가 따라 늘어난다.
   - 예제 버튼: `js/examples.js`, 항목 `{ name, code }`. 버튼을 누르면 입력 상자가 채워진다.
-  - 컴파일러 단계: `js/steps.js`, 항목 `{ name, url, visualizer }`와 선택 항목 `getOutput`(응답에서 출력값 고르기, 기본 `body.result`), `onResult`(성공 후 부수 효과, 예: 캔버스에서 Wasm 실행). `js/pipeline.js` 가 목록 순서대로 단계를 호출하고, 요청 body `{ source, input }` 을 보낸다. `input` 은 이전 단계의 출력이다(첫 단계는 소스).
+  - 컴파일러 단계: `js/steps.js`, 항목 `{ name, url, visualizer }`와 선택 항목 `getOutput`(응답에서 출력값 고르기, 기본 `body.output`), `onResult`(성공 후 부수 효과, 예: 캔버스에서 Wasm 실행). `js/pipeline.js` 가 목록 순서대로 단계를 호출하고, 요청 body `{ input }` 을 보낸다. `input` 은 이전 단계의 출력이다(첫 단계는 소스). `errors` 가 비어 있지 않으면 파이프라인이 멈춘다.
   - 출력 visualizer: `js/visualizers.js` 는 이름으로 찾는 레지스트리이고, 단계가 `visualizer` 로 하나를 고른다. 지금은 `text` 뿐이며, 트리 보기 같은 것은 레지스트리에 추가한다.
-- 오른쪽 패널은 캔버스를 보여 주다가, 단계가 diagnostics 를 돌려주면 오류 로그(줄·열 포함)를 보여 준다.
-- 백엔드는 아직 `input` 을 받지 않는다(`source` 로 체인을 처음부터 다시 돌린다). 목표는 단계 API 마다 입력을 받아 출력을 돌려주는 것이다.
+- 오른쪽 패널은 캔버스를 보여 주다가, 단계가 errors 를 돌려주면 오류 로그(줄·열 포함)를 보여 준다.
 - `js/canvas.js` 가 Wasm 이 import 할 그리기 함수(`moveTo`, `lineTo`, `stroke`, …)를 Canvas 2D API 로 감싼다. import 계약은 아래 "결정"을 본다.
 
 ## 개발 흐름 (로컬)
@@ -122,4 +120,4 @@ docker compose up --build
 
 ## 열린 질문
 
-1. **컴파일러 단계 목록.** 6단계(`lex / parse / ast / analyze / codegen` + 브라우저 실행)로 가는 쪽으로 기울어 있지만, [compiler-steps/proposal.md](compiler-steps/proposal.md) 의 단계 논의에서 함께 결정한다. 그때까지 스캐폴딩의 4단계(`lex / parse / analyze / codegen`)는 임시다.
+1. **컴파일러 단계 목록.** 6단계(`lex / parse / ast / analyze / codegen` + 브라우저 실행)로 가는 쪽으로 기울어 있지만, [compiler-steps/proposal.md](compiler-steps/proposal.md) 의 단계 논의에서 함께 결정한다. 지금 패키지와 백엔드는 5단계(`lex / parse / ast / analyze / codegen`)이고, 브라우저 실행은 프런트에 있다.

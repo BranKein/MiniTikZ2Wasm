@@ -53,7 +53,7 @@ web-fe  --HTTP(JSON)-->  web-be  --import-->  mini-tikz-2-wasm
 
 - Distribution name `mini-tikz-2-wasm`, import name `mini_tikz_2_wasm` (src layout).
 - One module and one function per compiler step: `lex`, `parse`, `analyze`, `codegen`.
-- `STEPS` is the ordered list `[("lex", lex), ("parse", parse), ...]`. The backend loops over it to create endpoints. **Because the steps are not final**, adding or removing a step should only need a change to this list.
+- `STEPS` is the ordered list `[("lex", lex), ("parse", parse), ("ast", build_ast), ...]`. The backend loops over it to create endpoints. Every step takes JSON-compatible data and returns a `StepResult(output, errors)`. **Because the steps are not final**, adding or removing a step should only need a change to this list.
 - Errors are collected as `Diagnostic(kind, message, line, column)`. Collecting several at once supports the "recover from syntax errors and keep compiling" requirement.
 - Per-step input/output/error/case docs live in [compiler-steps/](compiler-steps/README.md). Keep step names the same in code and in docs.
 - Tests live inside this package (`tests/`) and run with `pytest`. The compiler can be verified without the web.
@@ -64,12 +64,11 @@ web-fe  --HTTP(JSON)-->  web-be  --import-->  mini-tikz-2-wasm
 - Endpoints
   - `GET /health`
   - `GET /api/steps` — list of step names (the front end may use it to build step boxes)
-  - `POST /api/{step}` — body `{"source": "..."}`. Returns the result of running from the source up to that step. (Matches "one backend API per step" in [demo-web-design.md](demo-web-design.md).)
+  - `POST /api/{step}` — body `{"input": ...}`: the MiniTikZ source for the first step, the previous step's `output` for the others. It calls only that step's package function. (Matches "one backend API per step" in [demo-web-design.md](demo-web-design.md).)
 - Response convention
-  - Success: `{"ok": true, "result": ...}`
-  - Compile error: HTTP 200, `{"ok": false, "diagnostics": [{kind, message, line, column}, ...]}`
+  - HTTP 200, `{"output": ..., "errors": [{kind, message, line, column}, ...]}`; `errors` is empty on success, and `output` may be a recovered partial result or `null`
   - Unimplemented step: HTTP 501 (scaffold state)
-- The code generation result (bytes) will be base64-encoded to fit in JSON (`result_base64`).
+- The code generation result (bytes) is base64-encoded to fit in JSON: `output` becomes `{"wasmBase64": "..."}`.
 - Static files: the backend also serves `web-fe/` at `/` (FastAPI `StaticFiles`, mounted after the API routes). Front end and API share one origin and one port (8000), so no CORS setup is needed. The folder can be overridden with the `WEB_FE_DIR` environment variable.
 - Docker: `web-be/Dockerfile` (build context = repo root) and `docker-compose.yml` run the backend plus the static front end as one container.
 
@@ -79,10 +78,9 @@ web-fe  --HTTP(JSON)-->  web-be  --import-->  mini-tikz-2-wasm
 - The layout follows the design in [demo-web-design.md](demo-web-design.md) (input box, example buttons, canvas, per-step result boxes).
 - The two lists that must be extensible are kept as data. Adding an entry grows the UI automatically.
   - Example buttons: `js/examples.js`, entries `{ name, code }`. Clicking a button fills the input box.
-  - Compiler steps: `js/steps.js`, entries `{ name, url, visualizer }`, plus optional `getOutput` (pick the output value from the response; default `body.result`) and `onResult` (side effect after success, e.g. run the Wasm on the canvas). `js/pipeline.js` calls the steps in list order and sends each step the request body `{ source, input }`, where `input` is the previous step's output (the first step gets the source).
+  - Compiler steps: `js/steps.js`, entries `{ name, url, visualizer }`, plus optional `getOutput` (pick the output value from the response; default `body.output`) and `onResult` (side effect after success, e.g. run the Wasm on the canvas). `js/pipeline.js` calls the steps in list order and sends each step the request body `{ input }`, where `input` is the previous step's output (the first step gets the source). A non-empty `errors` stops the pipeline.
   - Output visualizers: `js/visualizers.js` is a registry keyed by name; a step picks one with `visualizer`. Only `text` exists so far; add others (e.g. a tree view) to the registry.
-- The right-hand panel shows the canvas, or the error log (with line/column) when a step returns diagnostics.
-- The backend does not take `input` yet (it re-runs the chain from `source`). The target is for each step API to take its input and return its output.
+- The right-hand panel shows the canvas, or the error log (with line/column) when a step returns errors.
 - `js/canvas.js` wraps the drawing functions the Wasm imports (`moveTo`, `lineTo`, `stroke`, …) around the Canvas 2D API. See "Decisions" below for the import contract.
 
 ## Local development flow
@@ -122,4 +120,4 @@ Workspace members are installed in editable mode, so compiler changes show up im
 
 ## Open questions
 
-1. **Compiler step list.** Leaning toward 6 steps (`lex / parse / ast / analyze / codegen` plus browser execution), but this is decided together with the step discussion in [compiler-steps/proposal.md](compiler-steps/proposal.md). The scaffold's 4 steps (`lex / parse / analyze / codegen`) are placeholders until then.
+1. **Compiler step list.** Leaning toward 6 steps (`lex / parse / ast / analyze / codegen` plus browser execution), but this is decided together with the step discussion in [compiler-steps/proposal.md](compiler-steps/proposal.md). The package and backend currently have 5 steps (`lex / parse / ast / analyze / codegen`); browser execution is on the front end.

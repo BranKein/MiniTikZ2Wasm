@@ -153,6 +153,6 @@ Adding or changing an import touches three places; do them together:
 
 1. **Confirm `sin`/`cos`.** They are a proposal: degrees (the reference program's `1 + cos(60) = 1.5` needs degrees) and host-provided. The alternative is generating an approximation inside Wasm, which would remove the two imports but adds code-generation work. If the owner wants radians, change `DEG` in `canvas.js` and the table above together.
 2. **Auto-fit view.** The view is fixed (scale 80, origin 40/360). A figure outside x, y ∈ [−0.5, 4.5] is cut off. Choosing the view from the figure would need either a host-side bounding-box pass or extra imports.
-3. **Style.** No color, line width, or dot-radius imports; MiniTikZ has no style options. The dot radius is chosen by the generator (3 px in the example).
+3. **Style (out of scope).** MiniTikZ has no style options, so there are no color, line width, or dot-radius imports; the host uses Canvas defaults. Adding style to the language means changing this contract. The dot radius is not a host default: the generator passes it to `fillCircle`, so agree a constant with the codegen owner (3 px in the example).
 4. **Node text.** Node labels (`{text}`) are not part of the language and no text-drawing import exists. If labels are added, a `fillText`-style import is needed.
 5. **Runtime guards.** Whether the generated code checks for division by zero or negative `sqrt` at run time (values that depend on a loop variable) is open; see [06-browser-execution](compiler-steps/06-browser-execution/README.md).

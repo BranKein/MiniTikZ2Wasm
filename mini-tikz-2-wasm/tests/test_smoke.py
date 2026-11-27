@@ -9,7 +9,7 @@ def test_package_imports():
 
 
 def test_step_names():
-    assert [name for name, _ in STEPS] == ["lex", "parse", "analyze", "codegen"]
+    assert [name for name, _ in STEPS] == ["lex", "parse", "ast", "analyze", "codegen"]
 
 
 @pytest.mark.parametrize("_name, step", STEPS)

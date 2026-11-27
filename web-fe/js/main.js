@@ -38,7 +38,7 @@ function showErrors(text) {
 }
 
 function formatDiagnostics(diagnostics) {
-  return diagnostics.map(({ kind, line, column, message }) => `${line}:${column} ${kind ? `[${kind}] ` : ""}${message}`).join("\n");
+  return diagnostics.map(({ kind, line, column, message }) => `${line == null ? "" : `${line}:${column} `}${kind ? `[${kind}] ` : ""}${message}`).join("\n");
 }
 
 function resetSteps() {
@@ -61,8 +61,8 @@ runButton.addEventListener("click", async () => {
       },
       onFail: (i, { status, body }) => {
         boxes[i].box.dataset.state = "failed";
-        if (body.diagnostics) {
-          showErrors(formatDiagnostics(body.diagnostics));
+        if (body.errors?.length) {
+          showErrors(formatDiagnostics(body.errors));
         } else {
           const message = status === 501 ? "not implemented yet" : (body.error ?? `HTTP ${status}`);
           VISUALIZERS.text(boxes[i].body, message);

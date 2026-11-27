@@ -31,7 +31,9 @@ The JSON below describes the browser inputs and outputs.
     "moveTo",
     "lineTo",
     "stroke",
-    "fillCircle"
+    "fillCircle",
+    "sin",
+    "cos"
   ]
 }
 ```

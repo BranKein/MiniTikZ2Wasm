@@ -31,7 +31,9 @@
     "moveTo",
     "lineTo",
     "stroke",
-    "fillCircle"
+    "fillCircle",
+    "sin",
+    "cos"
   ]
 }
 ```

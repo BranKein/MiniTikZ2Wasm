@@ -114,7 +114,7 @@ Workspace members are installed in editable mode, so compiler changes show up im
 
 1. **Names:** keep `mini-tikz-2-wasm` (folder / distribution) and `mini_tikz_2_wasm` (import).
 2. **Serving:** keep the project folders separate, but the backend serves the static files of `web-fe/` (one origin, one port, no CORS). Docker and docker compose are provided.
-3. **Wasm imports:** `moveTo(x, y)`, `lineTo(x, y)`, `stroke()`, `fillCircle(x, y, r)`. Coordinates are f64 math coordinates; the JavaScript host converts them to canvas pixels (y axis flipped, scaled). `r` is in pixels. The module exports `draw()`.
+3. **Wasm imports:** `moveTo(x, y)`, `lineTo(x, y)`, `stroke()`, `fillCircle(x, y, r)`, `sin(deg)`, `cos(deg)` (degrees, `f64 -> f64`; `sqrt` is the native `f64.sqrt`). Coordinates are f64 math coordinates; the JavaScript host converts them to canvas pixels (y axis flipped, scaled). `r` is in pixels. The module exports `draw()`.
 4. **Tooling:** `uv` with a workspace at the repo root.
 5. **Python:** 3.11 or newer.
 

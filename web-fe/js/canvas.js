@@ -1,4 +1,7 @@
-// Import contract: all coordinates are f64 math coordinates; the host converts to pixels.
+// Import contract (docs/wasm-canvas-api.md): all coordinates are f64 math coordinates; the host
+// converts to pixels. `sin` and `cos` take degrees (TikZ convention); Wasm has `f64.sqrt` itself.
+const DEG = Math.PI / 180;
+
 export function makeCanvasImports(ctx, view) {
   if (view === undefined) {
     view = { scale: 80, originX: 40, originY: ctx.canvas.height - 40 };
@@ -9,6 +12,8 @@ export function makeCanvasImports(ctx, view) {
     moveTo: (x, y) => ctx.moveTo(tx(x), ty(y)),
     lineTo: (x, y) => ctx.lineTo(tx(x), ty(y)),
     stroke: () => ctx.stroke(),
+    sin: (degrees) => Math.sin(degrees * DEG),
+    cos: (degrees) => Math.cos(degrees * DEG),
     // The circle radius is in canvas pixels.
     fillCircle: (x, y, r) => { ctx.beginPath(); ctx.arc(tx(x), ty(y), r, 0, Math.PI * 2); ctx.fill(); },
   };

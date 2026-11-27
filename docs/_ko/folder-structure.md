@@ -114,7 +114,7 @@ docker compose up --build
 
 1. **이름:** `mini-tikz-2-wasm`(폴더·배포 이름)과 `mini_tikz_2_wasm`(import 이름)을 유지한다.
 2. **서빙:** 프로젝트 폴더는 지금처럼 나누되, 백엔드가 `web-fe/` 정적 파일을 서빙한다 (origin·포트 하나, CORS 없음). Docker 와 docker compose 를 제공한다.
-3. **Wasm import:** `moveTo(x, y)`, `lineTo(x, y)`, `stroke()`, `fillCircle(x, y, r)`. 좌표는 f64 수학 좌표이고, JavaScript 호스트가 캔버스 픽셀로 바꾼다 (y 축 뒤집기, 스케일). `r` 은 픽셀 단위다. 모듈은 `draw()` 를 export 한다.
+3. **Wasm import:** `moveTo(x, y)`, `lineTo(x, y)`, `stroke()`, `fillCircle(x, y, r)`, `sin(deg)`, `cos(deg)` (도 단위, `f64 -> f64`; `sqrt` 는 Wasm 의 `f64.sqrt` 를 쓴다). 좌표는 f64 수학 좌표이고, JavaScript 호스트가 캔버스 픽셀로 바꾼다 (y 축 뒤집기, 스케일). `r` 은 픽셀 단위다. 모듈은 `draw()` 를 export 한다.
 4. **도구:** 레포 루트에 워크스페이스를 둔 `uv`.
 5. **Python:** 3.11 이상.
 
